@@ -1,14 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Crane Scene</title>
-  <style>
-    body { margin: 0; overflow: hidden; }
-    canvas { display: block; }
-  </style>
-</head>
-<body>
-  <script type="module" src="./main.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Crane Scene</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module" src="./main.js"></script>
+
+    <div
+      id="popup"
+      style="
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        padding: 10px 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        font-family: sans-serif;
+        border-radius: 5px;
+        display: none;
+        z-index: 10;
+      "
+    >
+      <span id="popup-text"></span>
+      <button id="popup-close" style="margin-left: 10px">Close</button>
+    </div>
+  </body>
 </html>

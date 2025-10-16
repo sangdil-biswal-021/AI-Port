@@ -8,6 +8,13 @@ export class InteractionManager {
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
 
+    // Popup elements
+    this.popup = document.getElementById('popup');
+    this.popupText = document.getElementById('popup-text');
+    this.popupClose = document.getElementById('popup-close');
+
+    this.popupClose.addEventListener('click', () => this.hidePopup());
+
     domElement.addEventListener('click', this.onClick.bind(this));
   }
 
@@ -25,10 +32,27 @@ export class InteractionManager {
 
   handleClick(object) {
     console.log('Clicked:', object.name || object.uuid);
+
+    // Highlight
     if (object.material) {
       const original = object.material.color.clone();
-      object.material.color.set(SETTINGS.highlightColor);
+      object.material.color.set(0xff0000);
       setTimeout(() => object.material.color.copy(original), 500);
     }
+
+    // Show popup with info
+    const name = object.name || "Unknown Object";
+    this.showPopup(`You clicked: ${name}`);
+  }
+
+  showPopup(text) {
+    this.popupText.innerText = text;
+    this.popup.style.display = 'block';
+
+    
+  }
+
+  hidePopup() {
+    this.popup.style.display = 'none';
   }
 }
