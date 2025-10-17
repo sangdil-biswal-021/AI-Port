@@ -19,12 +19,12 @@ const { camera, controls } = initCamera(renderer.domElement);
 // Keyboard controls
 initKeyboardControls();
 
-// Interaction Manager
-const interactionManager = new InteractionManager(camera, scene, renderer.domElement);
-
 // Load models
 const animatedModels = [];
 animatedModels.push(new AnimatedModel('./model/scene.glb', scene));
+
+// Interaction Manager - Pass animatedModels after they are loaded
+const interactionManager = new InteractionManager(camera, scene, renderer.domElement, controls, animatedModels);
 
 // Clock
 const clock = new THREE.Clock();
@@ -37,4 +37,4 @@ window.addEventListener('resize', () => {
 });
 
 // Start animation loop
-animate(renderer, scene, camera, controls, animatedModels, clock);
+animate(renderer, scene, camera, controls, animatedModels, clock, interactionManager);

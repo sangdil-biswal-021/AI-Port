@@ -9,13 +9,17 @@ export function initCamera(rendererDom) {
     0.1,
     1000
   );
-  camera.position.set(5, 3, 8);
+
+  // Top/angled view: slightly above, looking down
+  camera.position.set(6, 80, 60); // X, Y (height), Z
+  camera.lookAt(0, 0, 0); // look at scene center
 
   const controls = new OrbitControls(camera, rendererDom);
   controls.enableDamping = true;
 
   return { camera, controls };
 }
+
 
 // Keyboard movement
 export const keysPressed = {};
