@@ -7,46 +7,109 @@
       body {
         margin: 0;
         overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background: #1a1a1a; /* Dark background behind everything */
       }
-      canvas {
-        display: block;
+      
+      /* --- FIX: RE-ADDED STYLES FOR THE LOADING SCREEN --- */
+      #loading-screen {
+        /* Positioning to cover the whole screen */
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 100; /* Ensure it's on top of everything */
+        
+        /* Centering the content inside */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        
+        /* Appearance */
+        background-color: #1a1a1a;
+        color: #f0f0f0;
+        font-size: 1.5em;
+        
+        /* Fade-out Transition */
+        transition: opacity 1.5s ease;
       }
+
+      /* This class is added by JavaScript to trigger the fade-out */
+      #loading-screen.hidden {
+        opacity: 0;
+        /* After fading, remove its ability to intercept mouse clicks */
+        pointer-events: none; 
+      }
+
+      #loading-screen .logo {
+        font-weight: bold;
+        color: #4dc3ff; /* A nice techy blue */
+      }
+      /* --- END LOADING SCREEN FIX --- */
+
+      canvas { 
+        display: block; 
+      }
+      
+      /* ... all the styles for your #details-panel are still here and correct ... */
+      #details-panel {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 360px;
+        background-color: rgba(25, 35, 45, 0.85);
+        backdrop-filter: blur(10px);
+        color: #f0f0f0;
+        border-radius: 12px;
+        padding: 20px 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.4s ease, visibility 0.4s ease, transform 0.4s ease;
+        transform: translate(-50%, -45%);
+        z-index: 10;
+      }
+      #details-panel.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -50%);
+      }
+      .status-value { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+      .status-dot { width: 10px; height: 10px; border-radius: 50%; }
+      .status-dot.good { background-color: #28a745; }
+      .status-dot.warning { background-color: #ffc107; }
+      .status-dot.danger { background-color: #dc3545; }
+      .progress-bar { width: 120px; height: 10px; background-color: rgba(0, 0, 0, 0.3); border-radius: 5px; overflow: hidden; }
+      .progress-bar-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+      .progress-bar-fill.good { background-color: #28a745; }
+      .progress-bar-fill.warning { background-color: #ffc107; }
+      .progress-bar-fill.danger { background-color: #dc3545; }
+      #details-panel h2 { margin-top: 0; margin-bottom: 20px; font-size: 1.25em; text-align: center; color: #ffffff; border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 10px; }
+      #details-list { list-style: none; padding: 0; margin: 0; }
+      #details-list li { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-size: 0.95em; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+      #details-list li:last-child { border-bottom: none; }
+      #details-list li > span:first-child { color: #a0b0c0; }
+      #details-close { position: absolute; top: 10px; right: 10px; background: transparent; border: none; color: #a0b0c0; font-size: 24px; cursor: pointer; padding: 5px; line-height: 1; }
+      #details-close:hover { color: #ffffff; }
     </style>
   </head>
   <body>
-    <script type="module" src="./main.js"></script>
-
-    <div
-      id="popup"
-      style="
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        padding: 10px 20px;
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        font-family: sans-serif;
-        border-radius: 5px;
-        display: none;
-        z-index: 10;
-      "
-    >
-      <span id="popup-text"></span>
-      <button id="popup-close" style="margin-left: 10px">Close</button>
+    <!-- The loading screen div -->
+    <div id="loading-screen">
+      <div>
+        AI Powered PORT<br>
+        presented by '<span class="logo">FLUXION</span>'
+      </div>
     </div>
-    <div
-      id="popup"
-      style="
-        position: absolute;
-        display: none;
-        background: white;
-        padding: 8px;
-        border-radius: 4px;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-      "
-    >
-      <span id="popup-text"></span>
-      <button id="popup-close" style="margin-left: 8px">X</button>
+    
+    <script type="module" src="./main.js"></script>
+    
+    <!-- The details panel div -->
+    <div id="details-panel">
+      <button id="details-close">&times;</button>
+      <h2 id="details-title"></h2>
+      <ul id="details-list"></ul>
     </div>
   </body>
 </html>

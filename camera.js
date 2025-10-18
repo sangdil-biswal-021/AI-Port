@@ -17,6 +17,19 @@ export function initCamera(rendererDom) {
   const controls = new OrbitControls(camera, rendererDom);
   controls.enableDamping = true;
 
+   // --- NEW: CAMERA CONSTRAINTS ---
+  // 1. Limit Zoom Out
+  controls.maxDistance = 50;
+
+  // 2. Limit Zoom In
+  controls.minDistance = 1;
+
+  // 3. Prevent going below the ground
+  // Math.PI / 2 is the horizon (90 degrees). A slightly smaller value
+  // prevents the camera from going perfectly level with the ground.
+  controls.maxPolarAngle = Math.PI / 2.1;
+  // --- END NEW ---
+
   return { camera, controls };
 }
 
