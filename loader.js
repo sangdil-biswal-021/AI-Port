@@ -2,7 +2,6 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as THREE from 'three';
 
 export class AnimatedModel {
-  // --- FIX 1: Add 'onLoad' to the constructor's parameters ---
   constructor(path, scene, onLoad) {
     this.mixer = null;
     this.model = null;
@@ -11,15 +10,12 @@ export class AnimatedModel {
     this.activeAction = null;
     this.isOneShotPlaying = false;
 
-    // --- FIX 2: Pass 'onLoad' down to the load method ---
     this.load(path, scene, onLoad);
   }
 
-  // --- FIX 3: Add 'onLoad' to the load method's parameters ---
   load(path, scene, onLoad) {
     const loader = new GLTFLoader();
     loader.load(path, 
-      // onSuccess callback
       (gltf) => {
         this.model = gltf.scene;
         this.model.name = 'CraneModelContainer';
@@ -29,13 +25,28 @@ export class AnimatedModel {
           this.mixer = new THREE.AnimationMixer(this.model);
           console.log("Animation Mixer Initialized.");
 
+          // --- NEW: LOOP SYNCHRONIZATION LOGIC ---
+          const fps = 24;
+          const loopLengthInFrames = 900;
+          const targetDurationInSeconds = loopLengthInFrames / fps;
+          console.log(`All looping animations will be synchronized to a duration of ${targetDurationInSeconds} seconds.`);
+          // --- END NEW ---
+
           gltf.animations.forEach(clip => {
+            // Check if this is a looping animation (i.e., not pop_up or pop_down)
+            if (clip.name !== 'pop_up' && clip.name !== 'pop_down') {
+              // --- THIS IS THE KEY FIX ---
+              // Manually set the duration of the animation clip.
+              // This forces it to stretch or shrink to our target length.
+              clip.duration = targetDurationInSeconds;
+            }
+
             const action = this.mixer.clipAction(clip);
             this.animations.set(clip.name, action);
 
             if (clip.name !== 'pop_up' && clip.name !== 'pop_down') {
               action.setLoop(THREE.LoopRepeat);
-              action.play();
+              action.play(); // Play immediately
               this.loopingActions.push(action);
             } else {
               action.setLoop(THREE.LoopOnce);
@@ -43,7 +54,7 @@ export class AnimatedModel {
             }
           });
           
-          console.log(`${this.loopingActions.length} animations started in a loop.`);
+          console.log(`${this.loopingActions.length} animations were synchronized and started.`);
 
           this.mixer.addEventListener('finished', (e) => {
             const finishedClipName = e.action.getClip().name;
@@ -59,18 +70,14 @@ export class AnimatedModel {
           console.warn("No animations found in the GLTF file!");
         }
 
-        // --- FIX 4: Call the 'onLoad' function now that the model is ready ---
         if (onLoad) {
           onLoad();
         }
 
       },
-      // onProgress callback (optional)
       undefined,
-      // onError callback
       (err) => {
           console.error('Error loading model:', err);
-          // Also call onLoad on error to hide the loading screen and not get stuck
           if (onLoad) {
               onLoad();
           }

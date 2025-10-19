@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "three": "^0.180.0"
+    "three": "^0.180.0",
+    "@tweenjs/tween.js": "^23.1.2"
   },
   "devDependencies": {
     "vite": "^7.1.10"
