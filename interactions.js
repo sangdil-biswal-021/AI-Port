@@ -9,77 +9,60 @@ const initialCameraConfig = initCamera(document.createElement('div'));
 const initialCameraPosition = initialCameraConfig.camera.position.clone();
 const initialCameraLookAt = new THREE.Vector3(0, 0, 0);
 
-// --- NEW: Add all our focusable objects to the list ---
 const focusableObjectNames = [
   'Green_zeleni_kont_0',
-  // 'model_81_backside_2',
-  'crane_2', // The Crane
-  'Object_17',    // The Ship
-  'Object_17.001',    // The Ship 2
-
+  'model_81_backside_2',
+  'Object_4_002',
+  'Object_17',
+  'Object_17_001',
+  'crane_new', // The new crane
+  // All parts of the robotic arm:
+  'Arm1_lambert1_0',
+  'ArmBase_lambert1_0',
+  'RotatingArm_lambert1_0',
+  'Cube',
 ];
 
-// --- NEW: Expanded data map for all objects ---
+const roboticArmParts = [
+  'Arm1_lambert1_0',
+  'ArmBase_lambert1_0',
+  'RotatingArm_lambert1_0',
+  'Cube',
+];
+
 const mockObjectData = new Map([
   [
     'Green_zeleni_kont_0',
-    {
-      Name: 'Container C-734',
-      Status: 'Awaiting Pickup',
-      'Container Health': '98%',
-      Weight: '14.2 Tons',
-      'Max Weight': '30 Tons',
-      Location: 'Dock 4, Bay 7', // Added Location
-    },
+    { Name: 'Container C-734', Status: 'Awaiting Pickup', 'Container Health': '98%', Weight: '14.2 Tons', 'Max Weight': '30 Tons', Location: 'Dock 4, Bay 7', },
   ],
   [
     'model_81_backside_2',
-    {
-      Name: 'Port Power Unit',
-      Status: 'Active',
-      'Energy Output': '2.1 GW',
-      'Coolant Temp': '78°C',
-      'Last Service': '2025-08-12',
-    },
+    { Name: 'Port Power Unit', Status: 'Active', 'Energy Output': '2.1 GW', 'Coolant Temp': '78°C', 'Last Service': '2025-08-12', },
   ],
   [
-    'crane_2', // Crane Data
-    {
-      Name: 'Crane Alpha-3',
-      Status: 'Idle',
-      'Equipment Health': '92%',
-      Temperature: '45°C',
-      'Current Load': '0 Tons',
-      'Next Service': '2025-11-05',
-    },
-  ],
-   [
-    'Object_17', // Ship Data
-    {
-      Name: 'Cargo Ship "Odyssey"', // Corrected Name
-      Status: 'Docked - Unloading',       // More appropriate status
-      'Fuel Reserve': '65%',
-      'Cargo Capacity': '85% Full',     // Ship-related data
-      'Next Departure': '2025-10-19 18:00 UTC', // Ship-related data
-      'Maintenance Status': 'No Issues Reported', // Ship-related data
-    },
+    'Object_4_002',
+    { Name: 'Crane Alpha-3', Status: 'Idle', 'Equipment Health': '92%', Temperature: '45°C', 'Current Load': '0 Tons', 'Next Service': '2025-11-05', },
   ],
   [
-     'Object_17.001', // Second Ship Data
-    {
-      Name: 'Freighter "Starlight"',
-      Status: 'Docked - Loading',
-      'Fuel Reserve': '95%',
-      'Cargo Capacity': '34% Full',
-      'Next Departure': '2025-10-20 04:00 UTC',
-      'Maintenance Status': 'Minor Hydraulics Check Scheduled',
-    },
+    'Object_17',
+    { Name: 'Cargo Ship "Odyssey"', Status: 'Docked - Unloading', 'Fuel Reserve': '65%', 'Cargo Capacity': '85% Full', 'Next Departure': '2025-10-19 18:00 UTC', 'Maintenance Status': 'No Issues Reported', },
+  ],
+  [
+    'Object_17_001',
+    { Name: 'Freighter "Starlight"', Status: 'Docked - Loading', 'Fuel Reserve': '95%', 'Cargo Capacity': '34% Full', 'Next Departure': '2025-10-20 04:00 UTC', 'Maintenance Status': 'Minor Hydraulics Check Scheduled', },
+  ],
+  [
+    'crane_new',
+    { Name: 'Automated Crane Unit', Status: 'Active - Scanning', 'Transfer Efficiency': '+35%', 'Berth Idle Time': '-28%', Technology: 'Robotic Arm Integration', },
+  ],
+  [
+    'Robotic_Arm_System',
+    { Name: 'Robotic Arm System', Purpose: 'High-speed container scanning and sorting to reduce unloading times.', Status: 'Active', 'Current Task': 'Scanning Container #41', },
   ],
 ]);
 
-// --- The rest of the class definition follows ---
+
 export class InteractionManager {
-  // ... (constructor and other methods are mostly the same)
   constructor(camera, scene, domElement, controls = null, animatedModels = []) {
     this.camera = camera;
     this.scene = scene;
@@ -98,65 +81,12 @@ export class InteractionManager {
     this.detailsClose = document.getElementById('details-close');
     this.detailsClose.addEventListener('click', () => this.unfocusObject());
 
+    this.analyticsOverlay = document.getElementById('analytics-overlay');
+    this.currentContainerId = document.getElementById('current-container-id');
+    this.nextContainerId = document.getElementById('next-container-id');
+    this.efficiencyStat = document.getElementById('efficiency-stat');
+
     domElement.addEventListener('pointerdown', this.onPointerDown.bind(this));
-  }
-  
-  // --- REWRITTEN: The showDetails function is now much smarter ---
-  showDetails(objectName) {
-    const data = mockObjectData.get(objectName);
-    if (!data) return;
-
-    // Use the 'Name' property for the title, or the objectName as a fallback
-    this.detailsTitle.textContent = data.Name || objectName.replace(/_/g, ' ');
-    this.detailsList.innerHTML = ''; // Clear old data
-
-    // Loop through the data and build the list items dynamically
-    for (const [key, value] of Object.entries(data)) {
-      if (key === 'Name') continue; // Skip the name as it's already in the title
-
-      const listItem = document.createElement('li');
-      let content = '';
-
-      // Check the key to decide how to render the value
-      if (key.includes('Health') || key.includes('Reserve')) {
-        // --- Render a Progress Bar ---
-        const percentage = parseInt(value, 10);
-        let barClass = 'good';
-        if (percentage < 75) barClass = 'warning';
-        if (percentage < 30) barClass = 'danger';
-        content = `
-          <span>${key}</span>
-          <div class="progress-bar">
-            <div class="progress-bar-fill ${barClass}" style="width: ${percentage}%;"></div>
-          </div>
-        `;
-      } else if (key.includes('Status')) {
-        // --- Render a Status Indicator ---
-        let dotClass = 'good'; // Default to good
-        if (value.toLowerCase().includes('idle') || value.toLowerCase().includes('awaiting')) dotClass = 'warning';
-        if (value.toLowerCase().includes('error') || value.toLowerCase().includes('offline')) dotClass = 'danger';
-        content = `
-          <span>${key}</span>
-          <div class="status-value">
-            <span class="status-dot ${dotClass}"></span>${value}
-          </div>
-        `;
-      } else {
-        // --- Render a standard text value ---
-        content = `<span>${key}</span><span>${value}</span>`;
-      }
-      
-      listItem.innerHTML = content;
-      this.detailsList.appendChild(listItem);
-    }
-
-    // Use a short delay so the panel appears as the camera moves
-    setTimeout(() => { this.detailsPanel.classList.add('visible'); }, 300);
-  }
-
-  // --- (The rest of the file remains unchanged) ---
-  hideDetails() {
-    this.detailsPanel.classList.remove('visible');
   }
   
   onPointerDown(event) {
@@ -172,25 +102,66 @@ export class InteractionManager {
         return;
       }
     }
-    if (this.focusedObject) this.unfocusObject();
+    if (this.focusedObject) {
+      this.unfocusObject();
+    }
   }
 
   handleFocusableObjectClick(object) {
     if (this.focusedObject === object) return;
+    
     this.focusedObject = object;
-    this.showDetails(object.name);
-    const craneModel = this.animatedModels.find(m => m.model);
-    if (craneModel && craneModel.playPopUp) craneModel.playPopUp();
+    const objectName = object.name;
+    let dataKey = objectName;
+
+    const isRoboticArmPart = roboticArmParts.includes(objectName);
+    if (isRoboticArmPart) {
+      dataKey = 'Robotic_Arm_System';
+    }
+
+    this.showDetails(dataKey);
+    
+    if (objectName === 'crane_new' || isRoboticArmPart) {
+      this.showAnalyticsOverlay();
+    } else {
+      this.hideAnalyticsOverlay();
+    }
+
     this.focusCameraOnObject(object);
+
+    const craneModel = this.animatedModels.find(m => m.model);
+    if (craneModel && craneModel.playPopUp) {
+      craneModel.playPopUp();
+    }
   }
 
   unfocusObject() {
     if (!this.focusedObject) return;
+    
     this.focusedObject = null;
     this.hideDetails();
+    this.hideAnalyticsOverlay();
+
     const craneModel = this.animatedModels.find(m => m.model);
-    if (craneModel && craneModel.playPopDown) craneModel.playPopDown();
+    if (craneModel && craneModel.playPopDown) {
+      craneModel.playPopDown();
+    }
+
     this.resetCameraPosition();
+  }
+
+  showAnalyticsOverlay() {
+    this.currentContainerId.textContent = `C-${Math.floor(40 + Math.random() * 5)}`;
+    this.nextContainerId.textContent = `C-${Math.floor(80 + Math.random() * 5)}`;
+    this.efficiencyStat.textContent = `${(28 + Math.random() * 5).toFixed(1)}% Reduction`;
+    
+    setTimeout(() => {
+        this.analyticsOverlay.classList.add('visible');
+    }, 400);
+  }
+
+  hideAnalyticsOverlay() {
+    this.analyticsOverlay.classList.remove('visible');
   }
 
   findParentInList(object, names) {
@@ -200,6 +171,39 @@ export class InteractionManager {
       current = current.parent;
     }
     return null;
+  }
+  
+  showDetails(objectName) {
+    const data = mockObjectData.get(objectName);
+    if (!data) return;
+    this.detailsTitle.textContent = data.Name || objectName.replace(/_/g, ' ');
+    this.detailsList.innerHTML = '';
+    for (const [key, value] of Object.entries(data)) {
+      if (key === 'Name') continue;
+      const listItem = document.createElement('li');
+      let content = '';
+      if (key.includes('Health') || key.includes('Reserve') || key.includes('Capacity')) {
+        const percentage = parseInt(value, 10);
+        let barClass = 'good';
+        if (percentage < 75) barClass = 'warning';
+        if (percentage < 30) barClass = 'danger';
+        content = `<span>${key}</span><div class="progress-bar"><div class="progress-bar-fill ${barClass}" style="width: ${percentage}%;"></div></div>`;
+      } else if (key.includes('Status')) {
+        let dotClass = 'good';
+        if (value.toLowerCase().includes('idle') || value.toLowerCase().includes('awaiting') || value.toLowerCase().includes('scheduled')) dotClass = 'warning';
+        if (value.toLowerCase().includes('error') || value.toLowerCase().includes('offline')) dotClass = 'danger';
+        content = `<span>${key}</span><div class="status-value"><span class="status-dot ${dotClass}"></span>${value}</div>`;
+      } else {
+        content = `<span>${key}</span><span>${value}</span>`;
+      }
+      listItem.innerHTML = content;
+      this.detailsList.appendChild(listItem);
+    }
+    setTimeout(() => { this.detailsPanel.classList.add('visible'); }, 300);
+  }
+  
+  hideDetails() {
+    this.detailsPanel.classList.remove('visible');
   }
 
   focusCameraOnObject(object) {
