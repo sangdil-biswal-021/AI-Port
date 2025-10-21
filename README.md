@@ -122,6 +122,13 @@ scroll for forward ans backward movement
 you can use W,A,S,D or arrows for a orbital controll on the camera. 
 
 
+# Clickable Objects: (must try):
+
+Scene 1 : Click on the Cranes, Robotic Arms, containers, Ship(Front one) 
+Scene 2 : Click on the forklift vehicles you will get teh camera follow along them. (Some vehicle will lead to congested area other will use the path arrows to reach there destination).
+Scene 3 : Click on the Containers(At the centre - they are color coded), Holograms, Crane(Also color coded based on their working might went wrong and send alert simulation), Ship, Robotic Arm.
+
+
 
 
 🗂️ Project Structure
