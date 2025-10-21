@@ -21,6 +21,9 @@ export function animate(
       });
     }
 
+    // --- NEW: Update the flicker effect ---
+    interactionManager.updateFlicker(delta);
+
     // Call the camera tracking function every single frame
     interactionManager.updateTrackedCamera();
 

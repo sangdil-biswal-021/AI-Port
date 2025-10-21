@@ -7,8 +7,9 @@ import { animate } from './animate.js';
 
 // --- Data for our scenes ---
 const scenesData = [
-  { name: 'The Port', path: './model/scene.glb' },
-  { name: 'Vehicle Management', path: './model/scene2.glb' },
+  { name: 'The Port', path: './model/scene.glb', loopFrames: 900 },
+  { name: 'Vehicle Management', path: './model/scene2.glb', loopFrames: 900 },
+  { name: 'Predictive Maintenance', path: './model/scene3.glb', loopFrames: 600 },
 ];
 let currentSceneIndex = 0;
 let currentAnimatedModel = null;
@@ -40,8 +41,8 @@ async function init() {
   initKeyboardControls();
   const clock = new THREE.Clock();
 
-  // Create Interaction Manager once
-  const interactionManager = new InteractionManager(camera, scene, renderer.domElement, controls, []);
+   // Pass the scene index getter to the InteractionManager
+  const interactionManager = new InteractionManager(camera, scene, renderer.domElement, controls, [], () => currentSceneIndex);
 
   // --- Core Scene Loading Function ---
   const loadScene = async (index) => {
@@ -62,7 +63,8 @@ async function init() {
       currentAnimatedModel = new AnimatedModel(
         scenesData[index].path,
         scene,
-        () => resolve() // The onLoad callback resolves the promise
+        () => resolve(),
+        scenesData[index].loopFrames // The onLoad callback resolves the promise
       );
     });
     

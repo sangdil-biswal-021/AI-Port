@@ -2,7 +2,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import * as THREE from "three";
 
 export class AnimatedModel {
-  constructor(path, scene, onLoad) {
+  constructor(path, scene, onLoad, loopFrames = 900) {
     this.mixer = null;
     this.model = null;
     this.animations = new Map();
@@ -10,10 +10,10 @@ export class AnimatedModel {
     this.activeAction = null;
     this.isOneShotPlaying = false;
 
-    this.load(path, scene, onLoad);
+    this.load(path, scene, onLoad, loopFrames);
   }
 
-  load(path, scene, onLoad) {
+  load(path, scene, onLoad, loopFrames) {
     const loader = new GLTFLoader();
     loader.load(
       path,
@@ -28,8 +28,7 @@ export class AnimatedModel {
 
           // --- NEW: LOOP SYNCHRONIZATION LOGIC ---
           const fps = 24;
-          const loopLengthInFrames = 900;
-          const targetDurationInSeconds = loopLengthInFrames / fps;
+           const targetDurationInSeconds = loopFrames / fps;
           console.log(
             `All looping animations will be synchronized to a duration of ${targetDurationInSeconds} seconds.`
           );
