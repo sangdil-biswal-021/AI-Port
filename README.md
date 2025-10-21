@@ -48,11 +48,11 @@ Follow these steps carefully to run the project locally.
 
 ```bash
 git clone https://github.com/sangdil-biswal-021/AI-Port.git
-cd your-project-folder
+cd .\AI-Port
 ```
 
 
-2️⃣ Important: Download 3D Models
+###2️⃣ Important: Download 3D Models
 
 The large .glb 3D model files are not included in this repository.
 You must download them manually from the link below:
@@ -68,7 +68,7 @@ scene2.glb
 scene3.glb
 
 
-3️⃣ Place the 3D Models
+###3️⃣ Place the 3D Models
 
 Inside your project folder, create a new folder named model and place all three .glb files inside it.
 
@@ -80,10 +80,11 @@ Your structure should look like this:
 |   |-- scene2.glb
 |   |-- scene3.glb
 |-- (other project files...)
+<img width="458" height="631" alt="image" src="https://github.com/user-attachments/assets/29b4353f-1883-4ef2-90dc-e4508e65c0eb" />
 
 
 
-4️⃣ Download the HDRI Texture(can skip)
+###4️⃣ Download the HDRI Texture(can skip)
 
 This project uses an HDRI for realistic lighting.(Aleardy Set up follow instruciton if want to change it)
 
@@ -92,7 +93,7 @@ Recommended: studio_small_03_1k.hdr(already used)
 If you change the filename, update it in scene.js.
 
 
-5️⃣ Install Dependencies
+###5️⃣ Install Dependencies
 
 Open a terminal in the root folder and run:
 ```
@@ -102,7 +103,7 @@ npm install
 This will download all the necessary libraries like Three.js, Vite, and TWEEN.js.
 
 
-6️⃣ Run the Application
+###6️⃣ Run the Application
 
 Start the local development server with:
 ```
