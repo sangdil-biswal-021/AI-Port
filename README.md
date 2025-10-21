@@ -1,8 +1,4 @@
 # 🌊 AI Powered Port - Interactive 3D Dashboard
-
-This project is an **interactive 3D web application** that serves as a digital twin and management dashboard for a futuristic port.  
-Built with **Three.js** and **Vite**, it showcases multiple 3D scenes, complex animations, data-driven overlays, and real-time analytics for various port assets.
-
 ---
 
 ## 🚀 Features
@@ -25,10 +21,7 @@ Built with **Three.js** and **Vite**, it showcases multiple 3D scenes, complex a
   Critical machine alerts trigger a visual red/yellow flickering effect on the 3D model.
 
 - **Camera Controls:**  
-  Smooth camera animations for focusing and robust user controls with intelligent constraints (zoom and angle limits).
-
-- **Realistic Lighting:**  
-  Uses an HDRI for beautiful, physically-based lighting and reflections.
+  Smooth camera animations for focusing and robust user controls with intelligent constraints (zoom and angle limits)
 
 ---
 
@@ -119,6 +112,14 @@ http://localhost:5173/
 
 
 Open it in your browser to view the 3D dashboard.
+
+Quick Navigation Guide:
+Use both Mouse and keyboard to achieve higher flexibility
+Here use right click + drag to rotate the view
+Shift + right click + drag to displace forward
+scroll for forward ans backward movement
+
+you can use W,A,S,D or arrows for a orbital controll on the camera. 
 
 
 
