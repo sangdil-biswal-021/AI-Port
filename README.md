@@ -113,7 +113,7 @@ http://localhost:5173/
 
 Open it in your browser to view the 3D dashboard.
 
-Quick Navigation Guide:
+#Quick Navigation Guide:
 Use both Mouse and keyboard to achieve higher flexibility
 Here use right click + drag to rotate the view
 Shift + right click + drag to displace forward
