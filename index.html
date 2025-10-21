@@ -12,7 +12,7 @@
         background: #1a1a1a;
       }
 
-      /* --- (All other styles are unchanged) --- */
+      /* --- UPDATED: Loading Screen with Spinner --- */
       #loading-screen {
         position: absolute;
         width: 100%;
@@ -21,20 +21,71 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        text-align: center;
         background-color: #1a1a1a;
-        color: #f0f0f0;
-        font-size: 1.5em;
-        transition: opacity 1.5s ease;
+        transition: opacity 1s ease;
       }
       #loading-screen.hidden {
         opacity: 0;
         pointer-events: none;
       }
+      #loading-screen .content {
+        text-align: center;
+        color: #f0f0f0;
+        font-size: 1.5em;
+      }
       #loading-screen .logo {
         font-weight: bold;
         color: #4dc3ff;
       }
+      .spinner {
+        width: 60px;
+        height: 60px;
+        border: 5px solid rgba(255, 255, 255, 0.2);
+        border-top-color: #4dc3ff;
+        border-radius: 50%;
+        margin: 0 auto 20px auto;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      /* --- NEW: Scene Switcher UI --- */
+      #scene-switcher {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        background-color: rgba(25, 35, 45, 0.85);
+        backdrop-filter: blur(10px);
+        padding: 5px 20px;
+        border-radius: 12px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+      }
+      #scene-switcher button {
+        background: none;
+        border: none;
+        color: #a0b0c0;
+        font-size: 2em;
+        cursor: pointer;
+        padding: 0 10px;
+        transition: color 0.3s ease;
+      }
+      #scene-switcher button:hover {
+        color: #ffffff;
+      }
+      #scene-title {
+        color: #ffffff;
+        font-size: 1.2em;
+        font-weight: 500;
+        margin: 0;
+      }
+      
+      /* --- (All other styles for canvas, panels, dashboards are unchanged) --- */
       canvas {
         display: block;
       }
@@ -302,10 +353,18 @@
   </head>
   <body>
     <!-- (Loading Screen, main script, details panel, and analytics overlay are unchanged) -->
-    <div id="loading-screen">
-      <div>
-        AI Powered PORT<br />presented by '<span class="logo">FLUXION</span>'
+     <div id="loading-screen">
+      <div class="content">
+        <div class="spinner"></div>
+        AI Powered PORT<br>
+        presented by '<span class="logo">FLUXION</span>'
       </div>
+    </div>
+    <!-- NEW: Scene Switcher HTML -->
+    <div id="scene-switcher">
+      <button id="prev-scene-btn" title="Previous Scene">‹</button>
+      <h1 id="scene-title"></h1>
+      <button id="next-scene-btn" title="Next Scene">›</button>
     </div>
 
     <script type="module" src="./main.js"></script>

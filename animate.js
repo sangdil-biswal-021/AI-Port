@@ -1,33 +1,28 @@
-import { updateCameraPosition, keysPressed } from './camera.js';
+import { updateCameraPosition } from './camera.js';
 
-export function animate(renderer, scene, camera, controls, animatedModels, clock, interactionManager) {
+export function animate(renderer, scene, camera, controls, getAnimatedModels, clock, interactionManager) {
   function loop() {
     requestAnimationFrame(loop);
 
     const delta = clock.getDelta();
-    // console.log("Current delta:", delta); // Verbose delta logging
 
+    // --- UPDATED: Call the function to get the current models ---
+    const animatedModels = getAnimatedModels();
+    
     // Update animated models' mixers
-    animatedModels.forEach(m => {
-        if (m && m.update) { // Defensive check
-            m.update(delta);
-        } else {
-            console.warn("Animated model or its update method is undefined.");
-        }
-    });
+    if (animatedModels && animatedModels.length > 0) {
+      animatedModels.forEach(m => {
+        if (m) m.update(delta);
+      });
+    }
 
-    // Update camera only if no tween is active AND controls are enabled
     if (!interactionManager.isTweening() && controls.enabled) {
       updateCameraPosition(camera);
     }
 
-    // Update interaction tweens (for camera movement)
     interactionManager.update();
-
-    // Update controls (for damping and continuous movement)
     if (controls) controls.update();
 
-    // Render scene
     renderer.render(scene, camera);
   }
 

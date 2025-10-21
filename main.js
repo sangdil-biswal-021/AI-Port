@@ -5,47 +5,86 @@ import { AnimatedModel } from './loader.js';
 import { InteractionManager } from './interactions.js';
 import { animate } from './animate.js';
 
-async function init() {
-  // Get a reference to the loading screen
-  const loadingScreen = document.getElementById('loading-screen');
+// --- Data for our scenes ---
+const scenesData = [
+  { name: 'The Port', path: './model/scene.glb' },
+  { name: 'Vehicle Management', path: './model/scene2.glb' },
+];
+let currentSceneIndex = 0;
+let currentAnimatedModel = null;
 
+async function init() {
+  // --- UI Element References ---
+  const loadingScreen = document.getElementById('loading-screen');
+  const sceneTitle = document.getElementById('scene-title');
+  const prevSceneBtn = document.getElementById('prev-scene-btn');
+  const nextSceneBtn = document.getElementById('next-scene-btn');
+  
   // Renderer
-  const renderer = new THREE.WebGLRenderer({ 
-    antialias: true,
-    alpha: true 
-  });
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1;
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
   // Scene
-  const scene = initScene();
-
+  const scene = new THREE.Scene();
+  
   // Camera + Controls
   const { camera, controls } = initCamera(renderer.domElement);
   
-  // Await the HDRI setup
+  // Setup HDRI once
   await setupHDRI(renderer, scene);
   
-  // Now that the environment is ready, load the models
-  const animatedModels = [];
-  
-  // --- FIX: Pass the callback function to the AnimatedModel constructor ---
-  animatedModels.push(new AnimatedModel('./model/scene.glb', scene, () => {
-    // This code will now run AFTER the model has loaded successfully
-    console.log("Model loaded. Fading out loading screen.");
-    loadingScreen.classList.add('hidden');
-  }));
-
-  // Keyboard controls
+  // Keyboard controls & Clock
   initKeyboardControls();
-
-  // Interaction Manager
-  const interactionManager = new InteractionManager(camera, scene, renderer.domElement, controls, animatedModels);
-
-  // Clock
   const clock = new THREE.Clock();
+
+  // Create Interaction Manager once
+  const interactionManager = new InteractionManager(camera, scene, renderer.domElement, controls, []);
+
+  // --- Core Scene Loading Function ---
+  const loadScene = async (index) => {
+    // 1. Show loading screen
+    loadingScreen.classList.remove('hidden');
+    
+    // 2. Clean up the previous model if it exists
+    if (currentAnimatedModel) {
+      currentAnimatedModel.dispose();
+    }
+
+    // 3. Update state and UI
+    currentSceneIndex = index;
+    sceneTitle.textContent = scenesData[index].name;
+    
+    // 4. Load the new model, wrapped in a Promise to await its completion
+    await new Promise(resolve => {
+      currentAnimatedModel = new AnimatedModel(
+        scenesData[index].path,
+        scene,
+        () => resolve() // The onLoad callback resolves the promise
+      );
+    });
+    
+    // 5. Update the Interaction Manager with the new model
+    interactionManager.animatedModels = [currentAnimatedModel];
+    
+    console.log(`Scene '${scenesData[index].name}' loaded successfully.`);
+    
+    // 6. Hide loading screen
+    loadingScreen.classList.add('hidden');
+  };
+
+  // --- Event Listeners for Arrow Buttons ---
+  prevSceneBtn.addEventListener('click', () => {
+    const newIndex = (currentSceneIndex - 1 + scenesData.length) % scenesData.length;
+    loadScene(newIndex);
+  });
+
+  nextSceneBtn.addEventListener('click', () => {
+    const newIndex = (currentSceneIndex + 1) % scenesData.length;
+    loadScene(newIndex);
+  });
 
   // Resize Listener
   window.addEventListener('resize', () => {
@@ -55,8 +94,12 @@ async function init() {
   });
 
   // Start the continuous animation loop
-  animate(renderer, scene, camera, controls, animatedModels, clock, interactionManager);
+  // Pass a function to get the current model, as it will change
+  animate(renderer, scene, camera, controls, () => [currentAnimatedModel], clock, interactionManager);
+
+  // --- Initial Load ---
+  loadScene(0);
 }
 
-// Call the init function to start the app
+// Start the application
 init();
