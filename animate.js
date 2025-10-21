@@ -1,28 +1,45 @@
-import { updateCameraPosition } from './camera.js';
+import { updateCameraPosition } from "./camera.js";
 
-export function animate(renderer, scene, camera, controls, getAnimatedModels, clock, interactionManager) {
+export function animate(
+  renderer,
+  scene,
+  camera,
+  controls,
+  getAnimatedModels,
+  clock,
+  interactionManager
+) {
   function loop() {
     requestAnimationFrame(loop);
 
     const delta = clock.getDelta();
-
-    // --- UPDATED: Call the function to get the current models ---
     const animatedModels = getAnimatedModels();
-    
-    // Update animated models' mixers
+
     if (animatedModels && animatedModels.length > 0) {
-      animatedModels.forEach(m => {
+      animatedModels.forEach((m) => {
         if (m) m.update(delta);
       });
     }
 
-    if (!interactionManager.isTweening() && controls.enabled) {
+    // Call the camera tracking function every single frame
+    interactionManager.updateTrackedCamera();
+
+    // Only allow user WASD movement if not tweening, not tracking, and controls are enabled
+    if (
+      !interactionManager.isTweening() &&
+      !interactionManager.isTrackingActive() &&
+      controls.enabled
+    ) {
       updateCameraPosition(camera);
     }
 
+    // This updates TWEEN animations for camera focus/unfocus
     interactionManager.update();
+
+    // This is required for OrbitControls damping and also updates the camera position based on user mouse input
     if (controls) controls.update();
 
+    // Render the scene
     renderer.render(scene, camera);
   }
 

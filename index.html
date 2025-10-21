@@ -47,7 +47,9 @@
         animation: spin 1s linear infinite;
       }
       @keyframes spin {
-        to { transform: rotate(360deg); }
+        to {
+          transform: rotate(360deg);
+        }
       }
 
       /* --- NEW: Scene Switcher UI --- */
@@ -84,7 +86,7 @@
         font-weight: 500;
         margin: 0;
       }
-      
+
       /* --- (All other styles for canvas, panels, dashboards are unchanged) --- */
       canvas {
         display: block;
@@ -349,14 +351,74 @@
       #berth-list .eta-prediction.docked {
         color: #28a745;
       }
+
+      /* --- NEW: Tracking Analytics Panel Styles --- */
+      #tracking-analytics-panel {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        max-width: 800px;
+        box-sizing: border-box;
+        padding: 20px 30px;
+        background-color: rgba(180, 50, 50, 0.85); /* A reddish/warning color */
+        backdrop-filter: blur(10px);
+        border-top: 2px solid #ff6b6b;
+        color: #ffffff;
+        z-index: 30; /* Highest priority */
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        opacity: 0;
+        transform: translate(-50%, 100%); /* Start hidden below */
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+
+      #tracking-analytics-panel.optimized {
+        background-color: rgba(
+          50,
+          180,
+          100,
+          0.85
+        ); /* A greenish/optimized color */
+        border-top-color: #28a745;
+      }
+
+      #tracking-analytics-panel.visible {
+        opacity: 1;
+        transform: translateX(-50%); /* Slide into view */
+      }
+
+      #tracking-text {
+        font-size: 1.1em;
+        font-weight: 500;
+      }
+
+      #tracking-close-btn {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        line-height: 35px;
+        text-align: center;
+        padding: 0;
+      }
     </style>
   </head>
   <body>
     <!-- (Loading Screen, main script, details panel, and analytics overlay are unchanged) -->
-     <div id="loading-screen">
+    <div id="loading-screen">
       <div class="content">
         <div class="spinner"></div>
-        AI Powered PORT<br>
+        AI Powered PORT<br />
         presented by '<span class="logo">FLUXION</span>'
       </div>
     </div>
@@ -434,6 +496,12 @@
           <div class="eta-prediction">ETA: 2 Hrs</div>
         </li>
       </ul>
+    </div>
+
+    <!-- NEW: Tracking Analytics Panel HTML -->
+    <div id="tracking-analytics-panel">
+      <div id="tracking-text"></div>
+      <button id="tracking-close-btn" title="Stop Tracking">&times;</button>
     </div>
 
     <!-- NEW: Simple script to handle the collapse functionality -->
