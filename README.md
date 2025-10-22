@@ -1,8 +1,4 @@
 # 🌊 AI Powered Port - Interactive 3D Dashboard
-
-This project is an **interactive 3D web application** that serves as a digital twin and management dashboard for a futuristic port.  
-Built with **Three.js** and **Vite**, it showcases multiple 3D scenes, complex animations, data-driven overlays, and real-time analytics for various port assets.
-
 ---
 
 ## 🚀 Features
@@ -25,10 +21,7 @@ Built with **Three.js** and **Vite**, it showcases multiple 3D scenes, complex a
   Critical machine alerts trigger a visual red/yellow flickering effect on the 3D model.
 
 - **Camera Controls:**  
-  Smooth camera animations for focusing and robust user controls with intelligent constraints (zoom and angle limits).
-
-- **Realistic Lighting:**  
-  Uses an HDRI for beautiful, physically-based lighting and reflections.
+  Smooth camera animations for focusing and robust user controls with intelligent constraints (zoom and angle limits)
 
 ---
 
@@ -48,11 +41,11 @@ Follow these steps carefully to run the project locally.
 
 ```bash
 git clone https://github.com/sangdil-biswal-021/AI-Port.git
-cd your-project-folder
+cd .\AI-Port
 ```
 
 
-2️⃣ Important: Download 3D Models
+### 2️⃣ Important: Download 3D Models
 
 The large .glb 3D model files are not included in this repository.
 You must download them manually from the link below:
@@ -68,7 +61,7 @@ scene2.glb
 scene3.glb
 
 
-3️⃣ Place the 3D Models
+### 3️⃣ Place the 3D Models
 
 Inside your project folder, create a new folder named model and place all three .glb files inside it.
 
@@ -80,10 +73,11 @@ Your structure should look like this:
 |   |-- scene2.glb
 |   |-- scene3.glb
 |-- (other project files...)
+<img width="458" height="631" alt="image" src="https://github.com/user-attachments/assets/29b4353f-1883-4ef2-90dc-e4508e65c0eb" />
 
 
 
-4️⃣ Download the HDRI Texture(can skip)
+### 4️⃣ Download the HDRI Texture(can skip)
 
 This project uses an HDRI for realistic lighting.(Aleardy Set up follow instruciton if want to change it)
 
@@ -92,8 +86,8 @@ Recommended: studio_small_03_1k.hdr(already used)
 If you change the filename, update it in scene.js.
 
 
-5️⃣ Install Dependencies
-
+### 5️⃣ Install Dependencies
+ 
 Open a terminal in the root folder and run:
 ```
 npm install
@@ -102,7 +96,7 @@ npm install
 This will download all the necessary libraries like Three.js, Vite, and TWEEN.js.
 
 
-6️⃣ Run the Application
+### 6️⃣ Run the Application
 
 Start the local development server with:
 ```
@@ -118,6 +112,21 @@ http://localhost:5173/
 
 
 Open it in your browser to view the 3D dashboard.
+
+# Quick Navigation Guide:
+Use both Mouse and keyboard to achieve higher flexibility
+Here use right click + drag to rotate the view
+Shift + right click + drag to displace forward
+scroll for forward ans backward movement
+
+you can use W,A,S,D or arrows for a orbital controll on the camera. 
+
+
+# Clickable Objects: (must try):
+
+Scene 1 : Click on the Cranes, Robotic Arms, containers, Ship(Front one) 
+Scene 2 : Click on the forklift vehicles you will get teh camera follow along them. (Some vehicle will lead to congested area other will use the path arrows to reach there destination).
+Scene 3 : Click on the Containers(At the centre - they are color coded), Holograms, Crane(Also color coded based on their working might went wrong and send alert simulation), Ship, Robotic Arm.
 
 
 
