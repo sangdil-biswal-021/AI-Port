@@ -17,19 +17,30 @@ export function initScene() {
   return scene;
 }
 
-// --- THIS IS THE NEW, CORRECTED HDRI SETUP FUNCTION ---
-// We use an async function to load the texture without blocking the main thread.
-export async function setupHDRI(renderer, scene) {
+// --- THIS IS THE UPDATED HDRI SETUP FUNCTION ---
+// It now accepts a filename to allow for scene-specific backgrounds.
+export async function setupHDRI(renderer, scene, hdriName, exposure = 1.0) {
+  
+  renderer.toneMappingExposure = exposure;
+
   const pmremGenerator = new THREE.PMREMGenerator(renderer);
   const hdrLoader = new HDRLoader();
-  const hdriPath = './textures/aristea_wreck_puresky_1k.hdr';
+
+
+  // --- NEW LOGIC TO CHOOSE THE CORRECT HDRI ---
+  // If hdriName is 'default' or not provided, use the original HDRI.
+  // Otherwise, use the new name passed from main.js.
+  const defaultHdri = 'aristea_wreck_puresky_1k.hdr';
+  const filename = (hdriName && hdriName !== 'default') ? hdriName : defaultHdri;
+  const hdriPath = `./textures/${filename}`;
+  // --- END NEW LOGIC ---
 
   try {
-    console.log("Starting to load HDRI...");
+    console.log("Starting to load HDRI..."); // This log is preserved
     // Use .loadAsync() which returns a Promise. This is non-blocking.
     const texture = await hdrLoader.loadAsync(hdriPath);
     
-    console.log("HDRI file loaded in memory. Now compiling environment map...");
+    console.log("HDRI file loaded in memory. Now compiling environment map..."); // This log is preserved
     
     // Process the texture to create the environment map
     const envMap = pmremGenerator.fromEquirectangular(texture).texture;
@@ -38,14 +49,14 @@ export async function setupHDRI(renderer, scene) {
     scene.background = envMap;
     scene.environment = envMap;
     
-    console.log("HDRI setup complete and applied to the scene.");
+    console.log("HDRI setup complete and applied to the scene."); // This log is preserved
 
     // Clean up to free memory
     texture.dispose();
     pmremGenerator.dispose();
 
   } catch (error) {
-    console.error("CRITICAL: Failed to load or process the HDRI file.", error);
-    console.error(`Please ensure the file exists at the path: ${hdriPath}`);
+    console.error("CRITICAL: Failed to load or process the HDRI file.", error); // This log is preserved
+    console.error(`Please ensure the file exists at the path: ${hdriPath}`); // This log is preserved
   }
 }

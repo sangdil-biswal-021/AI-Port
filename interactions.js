@@ -231,7 +231,8 @@ export class InteractionManager {
     this.originalMaterial = null;
     this.flickerTime = 0;
     this.trackingCameraOffset = new THREE.Vector3(0, 5, 15);
-
+     
+    this.energyGridOverlay = document.getElementById('energy-grid-overlay');
     // Set up the main pointerdown listener once.
     domElement.addEventListener("pointerdown", this.onPointerDown.bind(this));
   }
@@ -347,6 +348,39 @@ export class InteractionManager {
         this.hideAnalyticsOverlay();
       }
       this.focusCameraOnObject(object);
+    }
+  }
+
+    // --- NEW: Function to toggle the new overlay's visibility ---
+  toggleEnergyGridOverlay(isVisible) {
+    const overlay = document.getElementById('energy-grid-overlay');
+    if (!overlay) return;
+
+    if (isVisible) {
+      // --- NEW: Update the data when showing the overlay ---
+      const generator = document.getElementById('source-generator');
+      const solar = document.getElementById('source-solar');
+
+      // Randomly choose which source is active
+      if (Math.random() > 0.4) {
+          generator.classList.remove('active-source');
+          solar.classList.add('active-source');
+          document.getElementById('solar-status').textContent = '98% Capacity';
+          document.getElementById('generator-status').textContent = 'Standby';
+      } else {
+          generator.classList.add('active-source');
+          solar.classList.remove('active-source');
+          document.getElementById('solar-status').textContent = 'Night Cycle';
+          document.getElementById('generator-status').textContent = '75% Load';
+      }
+      
+      document.getElementById('crane-consumption').textContent = `${(1.2 + Math.random() * 0.5).toFixed(2)} MW`;
+      document.getElementById('ship-consumption').textContent = `${(3.5 + Math.random()).toFixed(2)} MW`;
+      // --- END NEW ---
+
+      overlay.classList.add('visible');
+    } else {
+      overlay.classList.remove('visible');
     }
   }
 

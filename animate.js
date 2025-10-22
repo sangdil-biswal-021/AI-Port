@@ -3,7 +3,7 @@ import { updateCameraPosition } from "./camera.js";
 export function animate(
   renderer,
   scene,
-  camera,
+  getActiveCamera,
   controls,
   getAnimatedModels,
   clock,
@@ -11,6 +11,9 @@ export function animate(
 ) {
   function loop() {
     requestAnimationFrame(loop);
+
+    // --- NEW: Get the currently active camera on every frame ---
+    const camera = getActiveCamera();
 
     const delta = clock.getDelta();
     const animatedModels = getAnimatedModels();

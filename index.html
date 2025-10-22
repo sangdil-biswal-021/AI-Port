@@ -661,6 +661,105 @@
           border-right: 2px solid #a0b0c0;
         }
       }
+
+          /* --- REDESIGNED: Smart Energy Grid Overlay Styles --- */
+        #energy-grid-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 20px 0;
+            background-color: rgba(15, 25, 35, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            z-index: 25;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        #energy-grid-overlay.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .grid-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .grid-section-label {
+            font-size: 1em;
+            font-weight: bold;
+            color: #a0b0c0;
+            text-transform: uppercase;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+        }
+
+        .energy-node {
+            text-align: center;
+            background-color: rgba(0,0,0,0.2);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 150px; /* Give nodes a fixed width */
+        }
+        .energy-node .icon {
+            font-size: 2.5em;
+        }
+        .energy-node .label {
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        .energy-node .sublabel {
+            font-size: 0.8em;
+            color: #a0b0c0;
+        }
+        .energy-node .sublabel.good {
+            color: #28a745;
+        }
+
+        /* Subtle pulse animation for active sources */
+        .energy-node.active-source {
+            border-color: #4dc3ff;
+            animation: pulse-border 2s infinite;
+        }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(77, 195, 255, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(77, 195, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(77, 195, 255, 0); }
+        }
+        
+        .energy-flow-arrow {
+            font-size: 2em;
+            color: #555;
+        }
+        /* Only one animated arrow for the ship */
+        .energy-flow-animated {
+            position: relative;
+            width: 100px; /* Shorter connector */
+            height: 2px;
+            background-color: rgba(77, 195, 255, 0.3);
+        }
+        .energy-flow-animated::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 0;
+            width: 10px;
+            height: 10px;
+            background-color: #4dc3ff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #4dc3ff;
+            animation: flow-animation 3s linear infinite;
+        }
+        @keyframes flow-animation { from { left: 0; } to { left: calc(100% - 10px); } }
     </style>
   </head>
   <body>
@@ -826,6 +925,40 @@
         <button id="alert-action-secondary">Schedule Fix</button>
         <button id="alert-action-primary">Dispatch Drone</button>
       </div>
+    </div>
+
+     <!-- REDESIGNED: Smart Energy Grid Overlay HTML -->
+    <div id="energy-grid-overlay">
+        <div class="grid-section">
+            <div class="grid-section-label">Sources</div>
+            <div id="source-generator" class="energy-node">
+                <div class="icon">🏭</div>
+                <div class="label">Generator</div>
+                <div class="sublabel" id="generator-status">--</div>
+            </div>
+            <div id="source-solar" class="energy-node">
+                <div class="icon">☀️</div>
+                <div class="label">Solar Grid</div>
+                <div class="sublabel" id="solar-status">--</div>
+            </div>
+        </div>
+        
+        <div class="energy-flow-arrow">›</div>
+        
+        <div class="grid-section">
+            <div class="grid-section-label">Consumers</div>
+            <div class="energy-node">
+                <div class="icon">🏗️</div>
+                <div class="label">Crane Ops</div>
+                <div class="sublabel" id="crane-consumption">--</div>
+            </div>
+            <div class="energy-flow-animated"></div>
+            <div class="energy-node">
+                <div class="icon">🚢</div>
+                <div class="label">Docked Ship</div>
+                <div class="sublabel" id="ship-consumption">--</div>
+            </div>
+        </div>
     </div>
 
     <!-- NEW: Simple script to handle the collapse functionality -->

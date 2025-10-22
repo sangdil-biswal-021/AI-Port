@@ -9,6 +9,8 @@ export class AnimatedModel {
     this.loopingActions = [];
     this.activeAction = null;
     this.isOneShotPlaying = false;
+      // --- NEW: A place to store cameras found in the GLB ---
+    this.cameras = []; 
 
     this.load(path, scene, onLoad, loopFrames);
   }
@@ -21,6 +23,18 @@ export class AnimatedModel {
         this.model = gltf.scene;
         this.model.name = "CraneModelContainer";
         scene.add(this.model);
+
+        // --- NEW: Traverse the loaded scene to find any cameras ---
+           console.log("--- Traversing loaded model to find objects ---");
+      this.model.traverse((object) => {
+        if (object.isCamera) {
+          console.log(`Found a camera in the GLB file: "${object.name}"`);
+            console.log(`FOUND A CAMERA! Name: "${object.name}", Type: ${object.type}`);
+          this.cameras.push(object);
+        }
+      });
+
+        console.log("--- Traversal complete ---");
 
         if (gltf.animations && gltf.animations.length > 0) {
           this.mixer = new THREE.AnimationMixer(this.model);
