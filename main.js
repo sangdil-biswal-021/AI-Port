@@ -8,13 +8,12 @@ import { animate } from "./animate.js";
 // --- Data for our scenes (Updated with 'hdri' property) ---
 const scenesData = [
   {
-    name: "The Port",
+    name: "Smart Crane",
     path: "./model/scene.glb",
     loopFrames: 900,
     hdri: "default",
     cameraPos: { x: 6, y: 80, z: 60 },
-    exposure: 1.0
-    
+    exposure: 1.0,
   },
   {
     name: "Vehicle Management",
@@ -22,7 +21,7 @@ const scenesData = [
     loopFrames: 900,
     hdri: "default",
     cameraPos: { x: 6, y: 80, z: 60 },
-    exposure: 1.0
+    exposure: 1.0,
   },
   {
     name: "Predictive Maintenance",
@@ -30,7 +29,7 @@ const scenesData = [
     loopFrames: 600,
     hdri: "default",
     cameraPos: { x: 6, y: 80, z: 60 },
-    exposure: 1.0
+    exposure: 1.0,
   },
   {
     name: "Smart Energy Management",
@@ -38,7 +37,15 @@ const scenesData = [
     loopFrames: 600,
     hdri: "qwantani_moon_noon_puresky_1k.hdr",
     cameraPos: { x: 150, y: 100, z: 150 },
-     exposure: 0.3 
+    exposure: 0.3,
+  },
+  {
+    name: "Smart Vehicle Management",
+    path: "./model/scene5.glb",
+    loopFrames: 900,
+    hdri: "default",
+    cameraPos: { x: 6, y: 80, z: 60 },
+    exposure: 1.0,
   },
 ];
 let currentSceneIndex = 0;
@@ -66,7 +73,7 @@ async function init() {
   // Scene (Unchanged)
   const scene = new THREE.Scene();
 
-   // --- UPDATED: Store the default camera ---
+  // --- UPDATED: Store the default camera ---
   const { camera, controls } = initCamera(renderer.domElement);
   defaultCamera = camera;
   activeCamera = defaultCamera; // Start with the default camera
@@ -105,9 +112,12 @@ async function init() {
     const sceneData = scenesData[index];
     sceneTitle.textContent = sceneData.name;
 
-    
     // --- NEW: Set camera position for the new scene ---
-    camera.position.set(sceneData.cameraPos.x, sceneData.cameraPos.y, sceneData.cameraPos.z);
+    camera.position.set(
+      sceneData.cameraPos.x,
+      sceneData.cameraPos.y,
+      sceneData.cameraPos.z
+    );
     controls.target.set(0, 0, 0); // Reset orbit target to the center
 
     // NEW: Load the correct HDRI for the new scene
@@ -122,21 +132,27 @@ async function init() {
       );
     });
 
-    const cameraNameInCode = 'Fixed_Shot_Cam_Orientation';
-    console.log(`Searching for camera named: "${cameraNameInCode}"`);
+    const cameraPrefix = "Fixed_Shot_Cam";
+    console.log(`Searching for camera starting with: "${cameraPrefix}"`);
 
-     // --- NEW: After loading, check for a camera in the new model ---
-   if (currentAnimatedModel.cameras.length > 0) {
-      // Find the camera by the EXACT name.
-      sceneCamera = currentAnimatedModel.cameras.find(cam => cam.name === cameraNameInCode);
-      
+    // --- After loading, check for a camera in the new model ---
+    if (currentAnimatedModel.cameras.length > 0) {
+      // Find the camera whose name starts with the given prefix
+      sceneCamera = currentAnimatedModel.cameras.find((cam) =>
+        cam.name.startsWith(cameraPrefix)
+      );
+
       if (sceneCamera) {
-        console.log(`SUCCESS: Found '${cameraNameInCode}' in the scene.`);
+        console.log(
+          `✅ SUCCESS: Found camera '${sceneCamera.name}' in the scene.`
+        );
       } else {
-        console.error(`ERROR: Could not find camera named '${cameraNameInCode}'. Check Blender name and case-sensitivity.`);
+        console.error(
+          `❌ ERROR: No camera found starting with '${cameraPrefix}'. Check Blender camera naming.`
+        );
       }
     } else {
-      console.log("INFO: No cameras were found in this GLB file.");
+      console.log("ℹ️ INFO: No cameras were found in this GLB file.");
     }
 
     interactionManager.animatedModels = [currentAnimatedModel];
@@ -147,11 +163,10 @@ async function init() {
     interactionManager.toggleEnergyGridOverlay(index === 3); // index 3 is "Smart Energy Management"
   };
 
-
   // --- NEW: Add keydown event listener for camera switching ---
-  window.addEventListener('keydown', (e) => {
+  window.addEventListener("keydown", (e) => {
     // Check for the '0' key, only in scene 4, and only if a scene camera exists
-    if (e.key === '0' && currentSceneIndex === 3 && sceneCamera) {
+    if (e.key === "0" && sceneCamera) {
       if (activeCamera === defaultCamera) {
         // Switch TO the scene camera
         activeCamera = sceneCamera;
