@@ -24,7 +24,7 @@ const scenesData = [
     exposure: 1.0,
   },
   {
-    name: "Predictive Maintenance",
+    name: "Optimized Crane Operations",
     path: "./model/scene3.glb",
     loopFrames: 600,
     hdri: "default",
